@@ -126,7 +126,7 @@ allocator_type get_allocator() const { return _alloc; }
 		void resize (size_type n, value_type val = value_type()) {
 			if (n < _size)
 			{
-				for (size_type i = 0; i < n; i++)
+				for (size_type i = n; i < _size; i++)
 					_alloc.destroy(&_Arr[i]);
 				_size = n;	
 			}
