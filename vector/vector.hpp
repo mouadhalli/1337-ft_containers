@@ -147,7 +147,9 @@ allocator_type get_allocator() const { return _alloc; }
 		bool		empty( void ) const {return _size ? false : true;}
 
 		void 		reserve (size_type n) {
-			if (n > _Capacity)
+            if (n > max_size()) {
+                throw std::length_error("ft::vector: new capacity exceeds ram max length");
+            } else if (n > _Capacity)
 			{
 				value_type *tmp = _alloc.allocate(n);
 				for (size_type i = 0; i < _size; i++)
