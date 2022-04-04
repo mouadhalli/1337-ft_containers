@@ -107,7 +107,7 @@ allocator_type get_allocator() const { return _alloc; }
 		};
 
 						//---- Iterator Functions----//
-		iterator	begin() {return iterator(&_Arr[0]);}
+		iterator	begin() {return iterator(&_Arr[0]);} 
 		iterator	end() {return iterator(&_Arr[_size]);}
 
 		const_iterator begin() const {return iterator(&_Arr[0]);}
