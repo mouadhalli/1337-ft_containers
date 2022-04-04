@@ -51,18 +51,62 @@ namespace ft {
 				newNode->balanceFactor = 0;
 				return newNode;
 			}
+			/*
+
+					   z                               y
+					 /  \                            /   \ 
+					T1   y     Left Rotate(z)       z      x
+					    /  \   - - - - - - - ->    / \    / \
+					   T2   x                     T1  T2 T3  T4
+					       / \
+					     T3  T4
+			*/
+
+			node_type	*leftRotate(node_type *z) {
+				node_type *y = z->right;
+				node_type *T2 = y->left;
+				y->left = z;
+				z->right = T2;
+				z->height = max(height(z->left),
+				        height(z->right)) + 1;
+				y->height = max(height(y->left),
+				        height(y->right)) + 1;
+				return y;
+			}
+
+			/*
+			         z                                      y 
+			        / \                                   /   \
+			       y   T4      Right Rotate (z)          x      z
+			      / \          - - - - - - - - ->      /  \    /  \ 
+			     x   T3                               T1  T2  T3  T4
+			    / \
+			  T1   T2
+			*/
+
+			node_type	*rightRotate(node_type *z) {
+				node_type *y = z->left;
+				node_type *T3 = y->right;
+				y->right = z;
+				z->left = T3;
+				z->height = max(height(z->left),
+				        height(z->right)) + 1;
+				y->height = max(height(y->left),
+				        height(y->right)) + 1;
+				return y;
+			}
 
 			node_type	*insert(node_type *node, const value_type &val) {
 				if (!node)
 					return (new_Node(val));
 				else if (_Comp(node->data->first, val.first)) // right insert
 				{
-					node->right = insert_value(node->right, value); // keep searching
+					node->right = insert_value(node->right, val); // keep searching
 					node->right->parent = node;
 				}
 				else // left insert
 				{
-					node->right = insert_value(node->right, value); // keep searching
+					node->right = insert_value(node->right, val); // keep searching
 					node->right->parent = node;
 				}
 				//update height
@@ -73,17 +117,25 @@ namespace ft {
 				{
 					if (node->left->balanceFactor <= 0) 
 						// left left case
+						node = rightRotate(node);
 					else
+					{
 						// left right case
+						node->left = leftRotate(node->left);
+						node = rightRotate(node);
+					}
 				}
 				else if (node->balanceFactor == 2)	// means its right heavy
 				{
 					if (node->right->balanceFactor >= 0)
 						//right right case
+						node = leftRotate(node);
 					else
 						//right left case
+						node->right = rightRotate(node->right);
+						node = leftRotate(node);
 				}
-				return node
+				return node;
 			}
 
 		private:

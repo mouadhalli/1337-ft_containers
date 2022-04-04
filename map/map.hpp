@@ -42,7 +42,6 @@ namespace ft {
                 return *this;
             }
 
-
 		private:
 			AVL<value_type, key_compare, allocator_type>    _Tree;
         	key_compare     								_Comp;
