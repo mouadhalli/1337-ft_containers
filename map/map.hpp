@@ -27,12 +27,12 @@ namespace ft {
 			explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
 				: _Tree(), _Comp(comp), _Allocator(alloc) {}
 			
-			template <class InputIterator>
-  			map (InputIterator first, InputIterator last,
-       		const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()):
-			   	_Tree(first, last),
-				_Comp(comp),
-				_Allocator(alloc) {}
+			// template <class InputIterator>
+  			// map (InputIterator first, InputIterator last,
+       		// const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()):
+			//    	_Tree(first, last),
+			// 	_Comp(comp),
+			// 	_Allocator(alloc) {}
 			
 			map (const map& x) { *this = x; };
 			~map ( void ) {};
@@ -40,6 +40,10 @@ namespace ft {
 			map	&operator=( const map &rhs ) {
             	this->_Tree = rhs._Tree;
                 return *this;
+            }
+
+            void insert (const value_type& val) {   //modify function return later
+                _Tree.insert(val);
             }
 
 		private:

@@ -7,7 +7,7 @@ namespace ft {
 
 	template <typename T>
 	struct node {
-	    T		data;
+	    T		*data;
 	    node	*left;
 	    node	*right;
 	    node	*parent;
@@ -96,22 +96,22 @@ namespace ft {
 				return y;
 			}
 
-			node_type	*insert(node_type *node, const value_type &val) {
+			node_type	*insert_val(node_type *node, const value_type &val) {
 				if (!node)
 					return (new_Node(val));
-				else if (_Comp(node->data->first, val.first)) // right insert
+				else if (_Comp(node->data->_key, val._key)) // left insert
 				{
-					node->right = insert_value(node->right, val); // keep searching
+					node->right = insert_val(node->right, val); // keep searching
 					node->right->parent = node;
 				}
-				else // left insert
+				else // right insert
 				{
-					node->right = insert_value(node->right, val); // keep searching
-					node->right->parent = node;
+					node->left = insert_val(node->left, val); // keep searching
+					node->left->parent = node;
 				}
 				//update height
 				node->height = 1 + max(height(node->right), height(node->left));
-				node->balanceFactor = balanceFactor(node);
+				node->balanceFactor = height(node->right) - height(node->left);
 				//balance
 				if (node->balanceFactor == -2)	// means its left heavy
 				{
@@ -131,17 +131,38 @@ namespace ft {
 						//right right case
 						node = leftRotate(node);
 					else
+					{
 						//right left case
 						node->right = rightRotate(node->right);
 						node = leftRotate(node);
+					}
 				}
 				return node;
+			}
+
+			bool	exist(node_type *node, const value_type &val) {
+				if (node)
+				{
+					if (!_Comp(node->data->_key, val._key) && !_Comp(val._key, node->data->_key))
+						return true;
+					else if (_Comp(node->data->_key, val._key))
+						return exist(node->right, val);
+					else if (!_Comp(node->data->_key, val._key))
+						return exist(node->left, val);
+				}
+				return false;
+			}
+
+			bool	insert(const value_type &val) {
+				if (!exist(_root, val))
+					_root = insert_val(_root, val);
+				return (true);
 			}
 
 		private:
 			node_type		*_root;
 			allocator_type	_allocator;
-			allocator_type	_rebindAlloc;
+			rebind_type	_rebindAlloc;
 			key_compare		_Comp;
 
 	};

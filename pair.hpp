@@ -14,7 +14,8 @@ class pair
 
         pair(void): _key(0), _value(0) {}
         pair(const key_type &key, const value_type &value): _key(key), _value(value) {}
-        pair(const pair &rhs) { *this = rhs; }
+        template<class key, class value>
+            pair ( const pair<key, value>& pr ) : _key(pr._key), _value(pr._value) {}
         ~pair(void) {}
 
         pair &operator=( const pair& rhs ) {

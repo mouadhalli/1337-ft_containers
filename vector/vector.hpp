@@ -205,7 +205,7 @@ allocator_type get_allocator() const { return _alloc; }
             _Arr[_size++] = val;
 		}
 
-		void pop_back( void ) {if (_size && _Capacity)_alloc.destroy(&_Arr[_size--]);}
+		void pop_back( void ) {if (_size && _Capacity)_alloc.destroy(&_Arr[--_size]);}
 
 		iterator insert (iterator position, const value_type& val){
 			difference_type pos = std::distance(begin(), position);
