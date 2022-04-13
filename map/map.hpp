@@ -23,6 +23,7 @@ namespace ft {
             typedef typename allocator_type::const_reference	const_reference;
             typedef typename allocator_type::pointer			pointer; 
             typedef typename allocator_type::const_pointer		const_pointer;
+			typedef	size_t										size_type;
 
 			explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
 				: _Tree(), _Comp(comp), _Allocator(alloc) {}
@@ -42,9 +43,18 @@ namespace ft {
                 return *this;
             }
 
-            void insert (const value_type& val) {   //modify function return later
+            void	insert(const value_type& val) {   //modify function return later
                 _Tree.insert(val);
             }
+
+			size_type	erase(const key_type& key) {
+				if (_Tree.erase(key))
+					return (1);
+				return (0);
+			}
+
+            void	printTree() {_Tree.print();}
+
 
 		private:
 			AVL<value_type, key_compare, allocator_type>    _Tree;
