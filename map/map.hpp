@@ -23,7 +23,9 @@ namespace ft {
             typedef typename allocator_type::const_reference	const_reference;
             typedef typename allocator_type::pointer			pointer; 
             typedef typename allocator_type::const_pointer		const_pointer;
+            typedef AVL<value_type, key_compare, allocator_type> tree_type;
 			typedef	size_t										size_type;
+            typedef typename tree_type::iterator				iterator;
 
 			explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
 				: _Tree(), _Comp(comp), _Allocator(alloc) {}
@@ -43,6 +45,10 @@ namespace ft {
                 return *this;
             }
 
+			iterator begin( void ) {return _Tree.begin();}
+			iterator end( void ) {return _Tree.end();}
+			// const_iterator begin() const;
+
             void	insert(const value_type& val) {   //modify function return later
                 _Tree.insert(val);
             }
@@ -53,13 +59,18 @@ namespace ft {
 				return (0);
 			}
 
+            void clear( void ) {_Tree.clear();}
+
+            bool empty() const {return _Tree.IsEmpty();}
+
+			size_type count (const key_type& k) const {return _Tree.count(k);}
+
             void	printTree() {_Tree.print();}
 
-
 		private:
-			AVL<value_type, key_compare, allocator_type>    _Tree;
-        	key_compare     								_Comp;
-        	allocator_type									_Allocator;
+			tree_type		_Tree;
+        	key_compare		_Comp;
+        	allocator_type	_Allocator;
 
     };
 }

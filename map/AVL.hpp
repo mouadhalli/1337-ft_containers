@@ -2,6 +2,7 @@
 #define AVL_HPP
 
 #include <iostream>
+#include "../iterator/bidirectional_iterator.hpp"
 
 namespace ft {
 
@@ -19,15 +20,16 @@ namespace ft {
 	class AVL {
 
 		public:
-			typedef T															value_type;
-			typedef node<value_type>											node_type;
-			typedef	typename value_type::key_type								key_type;
-			typedef Alloc														allocator_type;
-			typedef typename allocator_type::template rebind<node_type>::other	rebind_type;
-            typedef Compare 													key_compare;
+			typedef T																		value_type;
+			typedef node<value_type>														node_type;
+			typedef	typename value_type::key_type											key_type;
+			typedef Alloc																	allocator_type;
+			typedef typename allocator_type::template rebind<node_type>::other				rebind_type;
+            typedef Compare 																key_compare;
+			typedef ft::bidirectional_iterator< value_type, node_type, AVL >				iterator;
 
-			AVL(const allocator_type& alloc = allocator_type(), const key_compare &compare = key_compare())
-				: _root(nullptr), _allocator(alloc), _Comp(compare) {}
+			AVL( void )
+				: _root(nullptr), _size(0) {}
 			~AVL( void ) {}
 
 			// AVL &operator=(AVL const &rhs){
@@ -47,8 +49,8 @@ namespace ft {
 
 			node_type	*new_Node(const value_type &val) {
 				node_type	*newNode = _rebindAlloc.allocate(1);
-				newNode->data = _allocator.allocate(1);
-				_allocator.construct(newNode->data, val);
+				newNode->data = _Alloc.allocate(1);
+				_Alloc.construct(newNode->data, val);
 				newNode->parent = nullptr;
 				newNode->left = nullptr;
 				newNode->right = nullptr;
@@ -56,6 +58,25 @@ namespace ft {
 				newNode->balanceFactor = 0;
 				return newNode;
 			}
+
+			void	FreeNode(node_type *node)
+			{
+				_Alloc.destroy(node->data);
+				_Alloc.deallocate(node->data, 1);
+				_rebindAlloc.deallocate(node, 1);
+			}
+
+			void	deleteTree(node_type *node) {
+				if (node)
+				{
+					deleteTree(node->left);
+					deleteTree(node->right);
+					FreeNode(node);
+				}
+			}
+
+			void	clear(void) {deleteTree(_root); _root = nullptr;}
+
 			/*
 
 					   z                               y
@@ -157,7 +178,7 @@ namespace ft {
 				return (Balance(node));
 			}
 
-			bool	exist(node_type *node, const key_type &key) {
+			bool	exist(node_type *node, const key_type &key) const {
 				if (node)
 				{
 					if (!_Comp(node->data->_key, key) && !_Comp(key, node->data->_key))
@@ -187,11 +208,12 @@ namespace ft {
 				if (!exist(_root, val._key))
 				{
 					_root = insert_val(_root, val);
+					_root->parent = nullptr;
+					_size++;
 					return (true);
 				}
 				return (false);
 			}
-
 
 			node_type	*maxValueNode(node_type	*node)
 			{
@@ -201,6 +223,59 @@ namespace ft {
 
 			    return current;
 			}
+
+			node_type	*minValueNode(node_type	*node)
+			{
+			    node_type	*current = node;
+			    while (current->left != NULL)
+			        current = current->left;
+
+			    return current;
+			}
+
+			node_type	*inorderSuccessor(node_type *currentNode) {
+
+				node_type *ParentNode = nullptr;
+
+				if (currentNode)
+				{
+					if (currentNode->right)
+						return minValueNode(currentNode->right);
+					else
+					{
+						ParentNode = currentNode->parent;
+						while (ParentNode && currentNode == ParentNode->right)
+						{
+							currentNode = ParentNode;
+							ParentNode = ParentNode->parent;
+						}
+					}
+				}
+				return (ParentNode);
+			}
+
+			node_type	*inorderPredecessor(node_type *currentNode) {
+
+				node_type *ParentNode = nullptr;
+
+				if (currentNode)
+				{
+					if (currentNode->left)
+						return maxValueNode(currentNode->left);
+					else
+					{
+						ParentNode = currentNode->parent;
+						while (ParentNode && currentNode == ParentNode->left)
+						{
+							currentNode = ParentNode;
+							ParentNode = ParentNode->parent;
+						}
+					}
+				}
+				return (ParentNode);
+			}
+
+			node_type	*getRoot( void ) {return _root;}
 
 		/*
 			       y 
@@ -244,27 +319,40 @@ namespace ft {
 				return Balance(node);
 			}
 
-			bool	erase(key_type &key)
+			bool	erase(const key_type &key)
 			{
 				if (exist(_root, key))
 				{
 					_root = RemoveNode(_root, key);
+					_size--;
 					return (true);
 				}
 				return (false);
 			}
 
-struct Trunk
-{
-    Trunk *prev;
-    std::string str;
- 
-    Trunk(Trunk *prev, std::string str)
-    {
-        this->prev = prev;
-        this->str = str;
-    }
-};
+			bool	IsEmpty( void ) const {
+				if (!_size)
+					return true;
+				return false;
+			}
+
+			bool	count(const key_type &key) const { return exist(_root, key);}
+
+			iterator	begin( void ) {return iterator(minValueNode(_root), this);}
+			iterator	end( void ) {return iterator(nullptr, this);}
+
+
+	struct Trunk
+	{
+	    Trunk *prev;
+	    std::string str;
+	
+	    Trunk(Trunk *prev, std::string str)
+	    {
+	        this->prev = prev;
+	        this->str = str;
+	    }
+	};
  
 	// Helper function to print branches of the binary tree
 	void showTrunks(Trunk *p)
@@ -308,11 +396,12 @@ struct Trunk
 	        prev->str = prev_str;
 	    }
 	    trunk->str = "   |";
-	    printTree(root->left, trunk, false);
 	
+	    printTree(root->left, trunk, false);
 	}
 
 	void	print() {printTree(_root, nullptr, false);}
+	
 		void __print(node_type *root, int space) {
 			if (root == NULL)
 				return;
@@ -329,9 +418,10 @@ struct Trunk
 
 		private:
 			node_type		*_root;
-			allocator_type	_allocator;
+			allocator_type	_Alloc;
 			rebind_type		_rebindAlloc;
 			key_compare		_Comp;
+			size_t			_size;
 
 	};
 };
