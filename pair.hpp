@@ -5,37 +5,35 @@
 
 namespace ft {
 
-template <typename T1, typename T2>
-class pair
-{
-    public:
-        typedef T1  key_type;
-        typedef T2  value_type;
+    template <typename T1, typename T2>
+    struct pair
+    {
+        public:
+            typedef T1  key_type;
+            typedef T2  value_type;
 
-        pair(void): _key(0), _value(0) {}
-        pair(const key_type &key, const value_type &value): _key(key), _value(value) {}
-        template<class key, class value>
+            pair(void): _key(), _value() {}
+            pair(const key_type &key, const value_type &value): _key(key), _value(value) {}
+            template<class key, class value>
             pair ( const pair<key, value>& pr ) : _key(pr._key), _value(pr._value) {}
-        ~pair(void) {}
+            ~pair(void) {}
 
-        pair &operator=( const pair& rhs ) {
-            if (this != &rhs) {
-                this->_key = rhs._key;
-                this->_value = rhs._value;
+            pair &operator=( const pair& rhs ) {
+                if (this != &rhs) {
+                    _key = rhs._key;
+                    _value = rhs._value;
+                }
+                return *this;
             }
-            return *this;
-        }
 
-        // key_type getKey() const { return this->_key;}
-        // value_type getValue() const { return this->_value;}
-        // void setKey(const key_type &val) { this->_key = val ;}
-        // void setValue(const value_type &val) { this->_value = val;}
+            key_type    _key;
+            value_type  _value;
+    };
 
-    // private:
-        key_type    _key;
-        value_type  _value;
-};
+    template <typename T1, typename T2>
+    ft::pair<T1, T2>    make_pair(T1 x, T2 y) {
+        return (ft::pair<T1, T2>(x, y));
+    }
 }
-
 
 #endif

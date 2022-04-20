@@ -32,7 +32,7 @@ class reverse_iterator
 
 
 		reference operator*() const {return *_Ptr;}
-		reference operator->() const {return &_Ptr;}
+		pointer operator->() const {return &(*_Ptr);}
 
 		reverse_iterator operator+ (difference_type n) const {return reverse_iterator(base() - n);}
 

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "../iterator/bidirectional_iterator.hpp"
+#include "../iterator/reverse_iterator.hpp"
 
 namespace ft {
 
@@ -27,17 +28,34 @@ namespace ft {
 			typedef typename allocator_type::template rebind<node_type>::other				rebind_type;
             typedef Compare 																key_compare;
 			typedef ft::bidirectional_iterator< value_type, node_type, AVL >				iterator;
+			typedef ft::bidirectional_iterator<const value_type, const node_type, AVL >		const_iterator;
+			typedef ft::reverse_iterator<iterator>											reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator>									const_reverse_iterator;
 
-			AVL( void )
-				: _root(nullptr), _size(0) {}
+			AVL( void ) : _root(nullptr), _size(0) {}
 			~AVL( void ) {}
 
-			// AVL &operator=(AVL const &rhs){
-			// 	if (this != &rhs) {
-			// 		_root = rhs._root;
-			// 	}
-			// 	return *this;
-			// }
+			AVL &operator=(AVL const &rhs){
+				if (this != &rhs) {
+					deleteTree(_root);
+					insertTree(rhs._root);
+					_Alloc	= rhs._Alloc;
+					_rebindAlloc = rhs._rebindAlloc;
+					_Comp = rhs._Comp;
+					_size = rhs._size;
+				}
+				return *this;
+			}
+
+			void 	insertTree(node_type *node) {
+				if (node)
+				{
+					insert(*node->data);
+					insertTree(node->right);
+					insertTree(node->left);
+				}
+				return;
+			}
 
 			size_t	max(size_t a, size_t b) { return (a > b ? a : b); }
 			size_t	height(node_type *node) {
@@ -45,7 +63,6 @@ namespace ft {
 					return 0;
 				return node->height;
 			}
-
 
 			node_type	*new_Node(const value_type &val) {
 				node_type	*newNode = _rebindAlloc.allocate(1);
@@ -75,7 +92,11 @@ namespace ft {
 				}
 			}
 
-			void	clear(void) {deleteTree(_root); _root = nullptr;}
+			void	clear(void) {
+				deleteTree(_root);
+				_root = nullptr;
+				_size = 0;
+			}
 
 			/*
 
@@ -159,25 +180,6 @@ namespace ft {
 				return node;
 			}
 
-			node_type	*insert_val(node_type *node, const value_type &val) {
-				if (!node)
-					return (new_Node(val));
-				else if (_Comp(node->data->_key, val._key)) // left insert
-				{
-					node->right = insert_val(node->right, val); // keep searching
-					node->right->parent = node;
-				}
-				else // right insert
-				{
-					node->left = insert_val(node->left, val); // keep searching
-					node->left->parent = node;
-				}
-				//update node
-				node->height = 1 + max(height(node->right), height(node->left));
-				node->balanceFactor = height(node->right) - height(node->left);
-				return (Balance(node));
-			}
-
 			bool	exist(node_type *node, const key_type &key) const {
 				if (node)
 				{
@@ -197,11 +199,48 @@ namespace ft {
 					if (!_Comp(node->data->_key, key) && !_Comp(key, node->data->_key))
 						return node;
 					else if (_Comp(node->data->_key, key))
-						return exist(node->right, key);
+						return find(node->right, key);
 					else if (!_Comp(node->data->_key, key))
-						return exist(node->left, key);
+						return find(node->left, key);
 				}
 				return nullptr;
+			}
+
+			node_type	*find_Succesor(const key_type &key)
+			{
+				node_type	*current = _root;
+				node_type	*succesor = nullptr;
+
+				while (current != nullptr)
+				{
+					if (_Comp(key, current->data->_key))
+					{
+						succesor = current;
+						current = current->left;
+					}
+					else
+						current = current->right;
+				}
+				return (succesor);
+			}
+
+			node_type	*insert_val(node_type *node, const value_type &val) {
+				if (!node)
+					return (new_Node(val));
+				else if (_Comp(node->data->_key, val._key)) // left insert
+				{
+					node->right = insert_val(node->right, val); // keep searching
+					node->right->parent = node;
+				}
+				else // right insert
+				{
+					node->left = insert_val(node->left, val); // keep searching
+					node->left->parent = node;
+				}
+				//update node
+				node->height = 1 + max(height(node->right), height(node->left));
+				node->balanceFactor = height(node->right) - height(node->left);
+				return (Balance(node));
 			}
 
 			bool	insert(const value_type &val) {
@@ -336,10 +375,30 @@ namespace ft {
 				return false;
 			}
 
+			size_t size() const {return _size;}
+			size_t max_size() const { return _Alloc.max_size();}
+
 			bool	count(const key_type &key) const { return exist(_root, key);}
 
-			iterator	begin( void ) {return iterator(minValueNode(_root), this);}
-			iterator	end( void ) {return iterator(nullptr, this);}
+			iterator		begin( void ) {return iterator(minValueNode(_root), this);}
+			const_iterator	begin() const {return iterator(minValueNode(_root), this);}
+
+			iterator		end( void ) {return iterator(nullptr, this);}
+			const_iterator	end() const {return iterator(nullptr, this);}
+
+			reverse_iterator rbegin() {return reverse_iterator(this->end());}
+			const_reverse_iterator rbegin() const {return const_reverse_iterator(this->end());}
+
+			reverse_iterator rend() {return  reverse_iterator(this->begin());}
+			const_reverse_iterator rend() const {return const_reverse_iterator(this->begin());}
+
+			void swap (AVL& x) {
+				std::swap(_root, x._root);
+				std::swap(_Alloc, x._Alloc);
+				std::swap(_rebindAlloc, x._rebindAlloc);
+				std::swap(_Comp, x._Comp);
+				std::swap(_size, x._size);
+			}
 
 
 	struct Trunk
@@ -401,20 +460,6 @@ namespace ft {
 	}
 
 	void	print() {printTree(_root, nullptr, false);}
-	
-		void __print(node_type *root, int space) {
-			if (root == NULL)
-				return;
-			space += 8;
-			__print(root->right, space);
-			std::cout << std::endl;
-			for (int i = 10; i < space; i++)
-				std::cout << " ";
-			std::cout << root->data->_key << std::endl;
-			__print(root->left, space);
-			// std::cout << "Node Key => " << root->data->_key << " BF => " << root->balanceFactor << std::endl;
-		}
-	// void	print() {__print(_root, 0);}
 
 		private:
 			node_type		*_root;
