@@ -3,6 +3,7 @@
 
 #include "../iterator/random_access_iterator.hpp"
 #include "../iterator/reverse_iterator.hpp"
+#include "../utils.hpp"
 
 namespace ft{
 
@@ -312,25 +313,13 @@ template < class T, class Alloc>
 	bool operator== (vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) {
         if (lhs.size() != rhs.size())
             return (lhs.size() == rhs.size());
-        return (std::equal(lhs.begin(), lhs.end(), rhs.begin()));
-}
-
-template<class InputIt1, class InputIt2>
-bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2)
-{
-    for ( ; (first1 != last1) && (first2 != last2); ++first1, (void) ++first2 ) {
-        if (*first1 < *first2)
-			return true;
-        if (*first2 < *first1)
-			return false;
-    }
-    return (first1 == last1) && (first2 != last2);
+        return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
 template < class T, class Alloc>
 	bool operator!= (vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) { return (!operator==(lhs, rhs)); }
 template < class T, class Alloc>
-	bool operator<  (vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) { return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+	bool operator<  (vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) { return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
 template < class T, class Alloc>
 	bool operator>  (vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) { return (operator<(rhs, lhs)); }
 template < class T, class Alloc>
@@ -339,7 +328,7 @@ template < class T, class Alloc>
 	bool operator>=  (vector<T, Alloc>& lhs, vector<T, Alloc>& rhs) { return (!operator<(lhs, rhs)); }
 
 template <class T, class Alloc>
-  void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) {x.swap(y);}
+  void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) { x.swap(y); }
 
 }
 #endif

@@ -87,4 +87,5 @@ bool operator<=(const random_access_iterator<T>& lhs, const random_access_iterat
 
 template < class T >
 bool operator>=(const random_access_iterator<T>& lhs, const random_access_iterator<T>& rhs) { return !operator<=(lhs, rhs); }
+
 }

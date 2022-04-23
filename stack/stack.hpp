@@ -27,9 +27,9 @@ namespace ft{
 
             friend bool operator==( const stack &lhs, const stack &rhs ) { return lhs._c == rhs._c; }
             friend bool operator!=( const stack &lhs, const stack &rhs ) { return lhs._c != rhs._c; }
-            friend bool operator< ( const stack &lhs, const stack &rhs ) { return lhs._c < rhs.c_; }
+            friend bool operator< ( const stack &lhs, const stack &rhs ) { return lhs._c < rhs._c; }
             friend bool operator<=( const stack &lhs, const stack &rhs ) { return lhs._c <= rhs._c; }
-            friend bool operator> ( const stack &lhs, const stack &rhs ) { return lhs._c > rhs.c_; }
+            friend bool operator> ( const stack &lhs, const stack &rhs ) { return lhs._c > rhs._c; }
             friend bool operator>=( const stack &lhs, const stack &rhs ) { return lhs._c >= rhs._c; }
 
         private:

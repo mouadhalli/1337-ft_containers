@@ -17,7 +17,7 @@ namespace ft {
 			typedef typename iterator_traits::reference			reference;
 
 			bidirectional_iterator() : _Node(), _Tree() {}
-			bidirectional_iterator(NodeType *node, TreeType *tree) : _Node(node), _Tree(tree) {}
+			bidirectional_iterator(NodeType *node, const TreeType *tree) : _Node(node), _Tree(tree) {}
 			bidirectional_iterator( const bidirectional_iterator &rhs ) {*this = rhs;}
 			~bidirectional_iterator( void ) {};
 
@@ -91,7 +91,7 @@ namespace ft {
 
 		private:
 			NodeType	*_Node;
-			TreeType	*_Tree;
+			TreeType const *_Tree;
     };
 
 	template < typename T, typename NodeType, typename TreeType >

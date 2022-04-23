@@ -38,6 +38,7 @@ namespace ft {
 			AVL &operator=(AVL const &rhs){
 				if (this != &rhs) {
 					deleteTree(_root);
+					_root = nullptr;
 					insertTree(rhs._root);
 					_Alloc	= rhs._Alloc;
 					_rebindAlloc = rhs._rebindAlloc;
@@ -78,9 +79,15 @@ namespace ft {
 
 			void	FreeNode(node_type *node)
 			{
-				_Alloc.destroy(node->data);
-				_Alloc.deallocate(node->data, 1);
-				_rebindAlloc.deallocate(node, 1);
+				if (node)
+				{
+					node->parent = nullptr;
+					_Alloc.destroy(node->data);
+					_Alloc.deallocate(node->data, 1);
+					_rebindAlloc.deallocate(node, 1);
+					node = nullptr;
+				}
+				return;
 			}
 
 			void	deleteTree(node_type *node) {
@@ -90,6 +97,7 @@ namespace ft {
 					deleteTree(node->right);
 					FreeNode(node);
 				}
+				return;
 			}
 
 			void	clear(void) {
@@ -112,10 +120,18 @@ namespace ft {
 			node_type	*leftRotate(node_type *z) {
 				node_type *y = z->right;
 				node_type *T2 = y->left;
-				y->left = z;
-				z->right = T2;
 				y->parent = z->parent;
 				z->parent = y;
+				y->left = z;
+				z->right = T2;
+				if (T2)
+				{
+					T2->parent = z;
+					T2->height = max(height(T2->right),
+				        height(T2->left)) + 1;
+					T2->balanceFactor = height(T2->right) - height(T2->left);
+
+				}
 				z->height = max(height(z->right),
 				        height(z->left)) + 1;
 				y->height = max(height(y->right),
@@ -139,10 +155,18 @@ namespace ft {
 			node_type	*rightRotate(node_type *z) {
 				node_type *y = z->left;
 				node_type *T3 = y->right;
-				y->right = z;
-				z->left = T3;
 				y->parent = z->parent;
+				y->right = z;
 				z->parent = y;
+
+				z->left = T3;
+				if (T3)
+				{
+					T3->parent = z;
+					T3->height = max(height(T3->right),
+				        height(T3->left)) + 1;
+					T3->balanceFactor = height(T3->right) - height(T3->left);
+				}
 				z->height = max(height(z->right),
 				        height(z->left)) + 1;
 				y->height = max(height(y->right),
@@ -183,11 +207,11 @@ namespace ft {
 			bool	exist(node_type *node, const key_type &key) const {
 				if (node)
 				{
-					if (!_Comp(node->data->_key, key) && !_Comp(key, node->data->_key))
+					if (!_Comp(node->data->first, key) && !_Comp(key, node->data->first))
 						return true;
-					else if (_Comp(node->data->_key, key))
+					else if (_Comp(node->data->first, key))
 						return exist(node->right, key);
-					else if (!_Comp(node->data->_key, key))
+					else if (!_Comp(node->data->first, key))
 						return exist(node->left, key);
 				}
 				return false;
@@ -196,11 +220,24 @@ namespace ft {
 			node_type	*find(node_type *node, const key_type &key) {
 				if (node)
 				{
-					if (!_Comp(node->data->_key, key) && !_Comp(key, node->data->_key))
+					if (!_Comp(node->data->first, key) && !_Comp(key, node->data->first))
 						return node;
-					else if (_Comp(node->data->_key, key))
+					else if (_Comp(node->data->first, key))
 						return find(node->right, key);
-					else if (!_Comp(node->data->_key, key))
+					else if (!_Comp(node->data->first, key))
+						return find(node->left, key);
+				}
+				return nullptr;
+			}
+
+			node_type	*find(node_type *node, const key_type &key) const {
+				if (node)
+				{
+					if (!_Comp(node->data->first, key) && !_Comp(key, node->data->first))
+						return node;
+					else if (_Comp(node->data->first, key))
+						return find(node->right, key);
+					else if (!_Comp(node->data->first, key))
 						return find(node->left, key);
 				}
 				return nullptr;
@@ -213,7 +250,25 @@ namespace ft {
 
 				while (current != nullptr)
 				{
-					if (_Comp(key, current->data->_key))
+					if (_Comp(key, current->data->first))
+					{
+						succesor = current;
+						current = current->left;
+					}
+					else
+						current = current->right;
+				}
+				return (succesor);
+			}
+
+			node_type	*find_Succesor(const key_type &key) const
+			{
+				node_type	*current = _root;
+				node_type	*succesor = nullptr;
+
+				while (current != nullptr)
+				{
+					if (_Comp(key, current->data->first))
 					{
 						succesor = current;
 						current = current->left;
@@ -227,7 +282,7 @@ namespace ft {
 			node_type	*insert_val(node_type *node, const value_type &val) {
 				if (!node)
 					return (new_Node(val));
-				else if (_Comp(node->data->_key, val._key)) // left insert
+				else if (_Comp(node->data->first, val.first)) // left insert
 				{
 					node->right = insert_val(node->right, val); // keep searching
 					node->right->parent = node;
@@ -244,7 +299,7 @@ namespace ft {
 			}
 
 			bool	insert(const value_type &val) {
-				if (!exist(_root, val._key))
+				if (!exist(_root, val.first))
 				{
 					_root = insert_val(_root, val);
 					_root->parent = nullptr;
@@ -254,25 +309,47 @@ namespace ft {
 				return (false);
 			}
 
-			node_type	*maxValueNode(node_type	*node)
+			node_type	*maxValueNode( node_type	*node)
 			{
-			    node_type	*current = node;
-			    while (current->right != NULL)
-			        current = current->right;
-
-			    return current;
+				if (node)
+				{
+			    	while (node->right != NULL)
+			    	    node = node->right;
+				}
+			    return node;
 			}
 
-			node_type	*minValueNode(node_type	*node)
+			node_type	*minValueNode( node_type	*node)
 			{
-			    node_type	*current = node;
-			    while (current->left != NULL)
-			        current = current->left;
-
-			    return current;
+				if (node)
+				{
+			    	while (node->left != NULL)
+			    	    node = node->left;
+				}
+			    return node;
 			}
 
-			node_type	*inorderSuccessor(node_type *currentNode) {
+			node_type	*maxValueNode( node_type	*node) const
+			{
+				if (node)
+				{
+			    	while (node->right != NULL)
+			    	    node = node->right;
+				}
+			    return node;
+			}
+
+			node_type	*minValueNode( node_type	*node) const
+			{
+				if (node)
+				{
+			    	while (node->left != NULL)
+			    	    node = node->left;
+				}
+			    return node;
+			}
+
+			node_type	*inorderSuccessor(const node_type *currentNode) {
 
 				node_type *ParentNode = nullptr;
 
@@ -293,7 +370,28 @@ namespace ft {
 				return (ParentNode);
 			}
 
-			node_type	*inorderPredecessor(node_type *currentNode) {
+			node_type	*inorderSuccessor(const node_type *currentNode) const {
+
+				node_type *ParentNode = nullptr;
+
+				if (currentNode)
+				{
+					if (currentNode->right)
+						return minValueNode(currentNode->right);
+					else
+					{
+						ParentNode = currentNode->parent;
+						while (ParentNode && currentNode == ParentNode->right)
+						{
+							currentNode = ParentNode;
+							ParentNode = ParentNode->parent;
+						}
+					}
+				}
+				return (ParentNode);
+			}
+
+			node_type	*inorderPredecessor(const node_type *currentNode) {
 
 				node_type *ParentNode = nullptr;
 
@@ -314,7 +412,28 @@ namespace ft {
 				return (ParentNode);
 			}
 
-			node_type	*getRoot( void ) {return _root;}
+			node_type	*inorderPredecessor(const node_type *currentNode) const {
+
+				node_type *ParentNode = nullptr;
+
+				if (currentNode)
+				{
+					if (currentNode->left)
+						return maxValueNode(currentNode->left);
+					else
+					{
+						ParentNode = currentNode->parent;
+						while (ParentNode && currentNode == ParentNode->left)
+						{
+							currentNode = ParentNode;
+							ParentNode = ParentNode->parent;
+						}
+					}
+				}
+				return (ParentNode);
+			}
+
+			node_type	*getRoot( void ) const {return _root;}
 
 		/*
 			       y 
@@ -334,23 +453,42 @@ namespace ft {
 
 			node_type	*RemoveNode(node_type *node, key_type &key)
 			{
+				node_type *tmp = nullptr;
 				if (!node)
 					return nullptr;
-				if (_Comp(node->data->_key, key))
+				if (_Comp(node->data->first, key))
+				{
 					node->right = RemoveNode(node->right, key);
-				else if (_Comp(key, node->data->_key))
+					if (node->right)
+						node->right->parent = node;
+				}
+				else if (_Comp(key, node->data->first))
+				{
 					node->left = RemoveNode(node->left, key);
+					if (node->left)
+						node->left->parent = node;
+				}
 				else
 				{
 					if (!node->right)
-						return node->left;
+					{
+						tmp = node->left;
+						FreeNode(node);
+						return tmp;
+					}
 					else if (!node->left)
-						return node->right;
+					{
+						tmp = node->right;
+						FreeNode(node);
+						return tmp;
+					}
 					else
 					{
-                        node_type	*successorVal = maxValueNode(node->left);
-                        node->data = successorVal->data;
-                        node->left = RemoveNode(node->left, successorVal->data->_key);
+                        node_type	*successorVal = minValueNode(node->right);
+						_Alloc.construct(node->data, *successorVal->data);
+                        node->right = RemoveNode(node->right, successorVal->data->first);
+						if (node->right)
+							node->right->parent = node;
                     }
 				}
 				node->height = 1 + max(height(node->right), height(node->left));
@@ -363,6 +501,8 @@ namespace ft {
 				if (exist(_root, key))
 				{
 					_root = RemoveNode(_root, key);
+					if (_root)
+						_root->parent = nullptr;
 					_size--;
 					return (true);
 				}
@@ -381,10 +521,16 @@ namespace ft {
 			bool	count(const key_type &key) const { return exist(_root, key);}
 
 			iterator		begin( void ) {return iterator(minValueNode(_root), this);}
-			const_iterator	begin() const {return iterator(minValueNode(_root), this);}
+			const_iterator	begin() const {
+				const node_type *tmp = reinterpret_cast< const node_type *>(minValueNode(_root));
+				// const node_type *tmp = nullptr;
+
+
+				return const_iterator(tmp, this);
+			}
 
 			iterator		end( void ) {return iterator(nullptr, this);}
-			const_iterator	end() const {return iterator(nullptr, this);}
+			const_iterator	end() const {return const_iterator(nullptr, this);}
 
 			reverse_iterator rbegin() {return reverse_iterator(this->end());}
 			const_reverse_iterator rbegin() const {return const_reverse_iterator(this->end());}
@@ -449,7 +595,8 @@ namespace ft {
 	    }
 	
 	    showTrunks(trunk);
-	    std::cout << " " << root->data->_key << std::endl;
+	    std::cout << " " << root->data->first << std::endl;
+	    // std::cout << " " << root->data->first << "|" << root->parent->data->first << std::endl;
 	
 	    if (prev) {
 	        prev->str = prev_str;
@@ -459,7 +606,10 @@ namespace ft {
 	    printTree(root->left, trunk, false);
 	}
 
-	void	print() {printTree(_root, nullptr, false);}
+	void	print() {
+		if (_root)
+			printTree(_root, nullptr, false);
+	}
 
 		private:
 			node_type		*_root;
