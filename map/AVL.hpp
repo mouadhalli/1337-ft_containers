@@ -33,7 +33,7 @@ namespace ft {
 			typedef ft::reverse_iterator<const_iterator>									const_reverse_iterator;
 
 			AVL( void ) : _root(nullptr), _size(0) {}
-			~AVL( void ) {}
+			~AVL( void ) { this->clear(); }
 
 			AVL &operator=(AVL const &rhs){
 				if (this != &rhs) {

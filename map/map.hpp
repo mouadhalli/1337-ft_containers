@@ -3,6 +3,7 @@
 #include "AVL.hpp"
 #include "../pair.hpp"
 #include "../utils.hpp"
+#include "../vector/vector.hpp"
 
 namespace ft {
 
@@ -113,18 +114,11 @@ namespace ft {
 			}
 
 			void erase (iterator first, iterator last) {
-				if (first == last)
-					return;
-				iterator target = first;
-				while (1)
-				{
-					++target;
-					if (target == last)
-						break;
-					_Tree.erase(target->first);
-					target = first;
-				}
-				_Tree.erase(first->first);
+				ft::vector<key_type>KeysVector;
+				for (;first != last; first++)
+					KeysVector.push_back(first->first);
+				for(typename ft::vector<key_type>::iterator it = KeysVector.begin();it != KeysVector.end(); it++)
+                        erase(*it);
 			}
 
             void clear( void ) {_Tree.clear();}
@@ -191,8 +185,8 @@ namespace ft {
 
     };
 
-// 	template <class Key, class T, class Compare, class Alloc>
-//   void swap (map<Key,T,Compare,Alloc>& x, map<Key,T,Compare,Alloc>& y);
+	template <class Key, class T, class Compare, class Alloc>
+  		void swap (map<Key,T,Compare,Alloc>& x, map<Key,T,Compare,Alloc>& y) { x.swap(y); }
 
 	template< class Key, class T, class Compare, class Alloc >
         bool operator==( const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs ) {

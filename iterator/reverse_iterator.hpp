@@ -15,13 +15,10 @@ class reverse_iterator
 		typedef typename iterator_traits<iterator_type>::pointer           pointer;
 		typedef typename iterator_traits<iterator_type>::reference         reference;
 
-		//default constructor:
 		reverse_iterator( void ): _Ptr() {};
 
-		//inisialization contructor:
 		reverse_iterator (iterator_type it): _Ptr(--it) {}
 
-		//copy contructor:
 		template <class U>
   		reverse_iterator (const reverse_iterator<U>& rev_it) {this->_Ptr = --rev_it.base();}
 
@@ -33,7 +30,6 @@ class reverse_iterator
 			++tmp;
 			return tmp;
 		}
-
 
 		reference operator*() const {return *_Ptr;}
 		pointer operator->() const {return &(*_Ptr);}
@@ -104,7 +100,7 @@ reverse_iterator<Iterator> operator+ (
 
 template <class Iterator>
 typename reverse_iterator<Iterator>::difference_type operator- (
-    const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) {return lhs.base() - rhs.base();}
+    const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) {return rhs.base() - lhs.base();}
 	
 }
 #endif
