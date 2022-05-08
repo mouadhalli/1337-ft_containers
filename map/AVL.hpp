@@ -33,6 +33,7 @@ namespace ft {
 			typedef ft::reverse_iterator<const_iterator>									const_reverse_iterator;
 
 			AVL( void ) : _root(nullptr), _size(0) {}
+
 			~AVL( void ) { this->clear(); }
 
 			AVL &operator=(AVL const &rhs){
@@ -59,6 +60,7 @@ namespace ft {
 			}
 
 			size_t	max(size_t a, size_t b) { return (a > b ? a : b); }
+
 			size_t	height(node_type *node) {
 				if (node == NULL)
 					return 0;
@@ -125,13 +127,7 @@ namespace ft {
 				y->left = z;
 				z->right = T2;
 				if (T2)
-				{
 					T2->parent = z;
-					T2->height = max(height(T2->right),
-				        height(T2->left)) + 1;
-					T2->balanceFactor = height(T2->right) - height(T2->left);
-
-				}
 				z->height = max(height(z->right),
 				        height(z->left)) + 1;
 				y->height = max(height(y->right),
@@ -161,12 +157,7 @@ namespace ft {
 
 				z->left = T3;
 				if (T3)
-				{
 					T3->parent = z;
-					T3->height = max(height(T3->right),
-				        height(T3->left)) + 1;
-					T3->balanceFactor = height(T3->right) - height(T3->left);
-				}
 				z->height = max(height(z->right),
 				        height(z->left)) + 1;
 				y->height = max(height(y->right),
@@ -443,14 +434,6 @@ namespace ft {
 			 T1  T2  T3  T4
 		*/
 
-			/*delete node with a given key
-				- check if the node exist
-				- check for the deletion case:
-					- node with no childs
-					- node with 1 child
-					- node with 2 childs:
-		*/
-
 			node_type	*RemoveNode(node_type *node, key_type &key)
 			{
 				node_type *tmp = nullptr;
@@ -515,28 +498,22 @@ namespace ft {
 				return false;
 			}
 
-			size_t size() const {return _size;}
-			size_t max_size() const { return _Alloc.max_size();}
+			size_t size() const { return _size; }
+			size_t max_size() const { return _Alloc.max_size(); }
 
 			bool	count(const key_type &key) const { return exist(_root, key);}
 
 			iterator		begin( void ) {return iterator(minValueNode(_root), this);}
-			const_iterator	begin() const {
-				const node_type *tmp = reinterpret_cast< const node_type *>(minValueNode(_root));
-				// const node_type *tmp = nullptr;
-
-
-				return const_iterator(tmp, this);
-			}
+			const_iterator	begin( void ) const { return const_iterator(minValueNode(_root), this); }
 
 			iterator		end( void ) {return iterator(nullptr, this);}
-			const_iterator	end() const {return const_iterator(nullptr, this);}
+			const_iterator	end( void ) const {return const_iterator(nullptr, this);}
 
-			reverse_iterator rbegin() {return reverse_iterator(this->end());}
-			const_reverse_iterator rbegin() const {return const_reverse_iterator(this->end());}
+			reverse_iterator rbegin( void ) {return reverse_iterator(this->end());}
+			const_reverse_iterator rbegin( void ) const {return const_reverse_iterator(this->end());}
 
-			reverse_iterator rend() {return  reverse_iterator(this->begin());}
-			const_reverse_iterator rend() const {return const_reverse_iterator(this->begin());}
+			reverse_iterator rend( void ) {return  reverse_iterator(this->begin());}
+			const_reverse_iterator rend( void ) const {return const_reverse_iterator(this->begin());}
 
 			void swap (AVL& x) {
 				std::swap(_root, x._root);
@@ -546,72 +523,8 @@ namespace ft {
 				std::swap(_size, x._size);
 			}
 
-
-	struct Trunk
-	{
-	    Trunk *prev;
-	    std::string str;
-	
-	    Trunk(Trunk *prev, std::string str)
-	    {
-	        this->prev = prev;
-	        this->str = str;
-	    }
-	};
- 
-	// Helper function to print branches of the binary tree
-	void showTrunks(Trunk *p)
-	{
-	    if (p == nullptr) {
-	        return;
-	    }
-	
-	    showTrunks(p->prev);
-	    std::cout << p->str;
-	}
-	
-	void printTree(node_type* root, Trunk *prev, bool isLeft)
-	{
-	    if (root == nullptr) {
-	        return;
-	    }
-	
-	    std::string prev_str = "    ";
-	    Trunk *trunk = new Trunk(prev, prev_str);
-	
-	    printTree(root->right, trunk, true);
-	
-	    if (!prev) {
-	        trunk->str = "———";
-	    }
-	    else if (isLeft)
-	    {
-	        trunk->str = ".———";
-	        prev_str = "   |";
-	    }
-	    else {
-	        trunk->str = "`———";
-	        prev->str = prev_str;
-	    }
-	
-	    showTrunks(trunk);
-	    std::cout << " " << root->data->first << std::endl;
-	    // std::cout << " " << root->data->first << "|" << root->parent->data->first << std::endl;
-	
-	    if (prev) {
-	        prev->str = prev_str;
-	    }
-	    trunk->str = "   |";
-	
-	    printTree(root->left, trunk, false);
-	}
-
-	void	print() {
-		if (_root)
-			printTree(_root, nullptr, false);
-	}
-
 		private:
+
 			node_type		*_root;
 			allocator_type	_Alloc;
 			rebind_type		_rebindAlloc;

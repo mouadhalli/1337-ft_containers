@@ -18,8 +18,8 @@ class vector
 		typedef typename allocator_type::const_reference	const_reference;
 		typedef typename allocator_type::pointer			pointer;
 		typedef typename allocator_type::const_pointer		const_pointer;
-		typedef random_access_iterator<value_type>      		iterator;
-    	typedef random_access_iterator<const value_type>		const_iterator;
+		typedef random_access_iterator<pointer>      		iterator;
+    	typedef random_access_iterator<const_pointer>		const_iterator;
 
     	typedef reverse_iterator<const_iterator>   			const_reverse_iterator;
     	typedef reverse_iterator<iterator>         			reverse_iterator;
@@ -54,14 +54,13 @@ class vector
 		template <class InputIterator>
         vector (InputIterator first, InputIterator last,
         		const allocator_type& alloc = allocator_type(),
-				typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type = InputIterator())
+				typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type = InputIterator())
 		{
-			difference_type AllocSize = std::abs(std::distance(first, last));
+			difference_type AllocSize = std::distance(first, last);
 			_size = AllocSize;
 			_alloc = alloc;
 			_Capacity = AllocSize;
 			_Arr = _alloc.allocate(_Capacity);
-
 			for (size_type i = 0; i < _size; i++)
 				_alloc.construct(&_Arr[i], *first++);
 		};
@@ -100,9 +99,7 @@ allocator_type get_allocator() const { return _alloc; }
 				_Capacity = x._Capacity;
 				_Arr = _alloc.allocate(_Capacity);
 				for (size_type i = 0; i < _size; i++)
-				{
 					_alloc.construct(&_Arr[i], x._Arr[i]);
-				}
 			}
 			return (*this);
 		};
@@ -111,8 +108,8 @@ allocator_type get_allocator() const { return _alloc; }
 		iterator	begin() {return iterator(&_Arr[0]);} 
 		iterator	end() {return iterator(&_Arr[_size]);}
 
-		const_iterator begin() const {return iterator(&_Arr[0]);}
-		const_iterator end() const {return iterator(&_Arr[_size]);}
+		const_iterator begin() const {return const_iterator(&_Arr[0]);}
+		const_iterator end() const {return const_iterator(&_Arr[_size]);}
 
 		reverse_iterator rbegin() {return reverse_iterator(this->end());}
 		reverse_iterator rend() {return  reverse_iterator(this->begin());}
@@ -187,7 +184,7 @@ allocator_type get_allocator() const { return _alloc; }
 
 		template <class InputIterator>
 		void assign (InputIterator first, InputIterator last,
-		typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type = InputIterator()){
+		typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type = InputIterator()){
 			difference_type range = std::distance(first, last);
 			if ((size_type)range > _Capacity)
 				reserve(range);
@@ -221,7 +218,7 @@ allocator_type get_allocator() const { return _alloc; }
 			return iterator(&_Arr[pos]);
 		}
 
-		 void insert (iterator position, size_type n, const value_type& val){
+		void insert (iterator position, size_type n, const value_type& val){
 			difference_type pos = std::distance(begin(), position);
 			if (_size + n > _Capacity)	
 			{
@@ -241,10 +238,12 @@ allocator_type get_allocator() const { return _alloc; }
 
 		template <class InputIterator>
     	void insert (iterator position, InputIterator first, InputIterator last,
-			typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type = InputIterator()){
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type = InputIterator()){
 			difference_type pos = std::distance(begin(), position);
 			difference_type range = std::distance(first, last);
-			if (_size + range > _Capacity)
+			if (range < 0)
+				return;
+			if ( _size + range > _Capacity)
 			{
 				int a = ((_Capacity * 2) > (_Capacity + range) ? (_Capacity * 2)  : (_Capacity + range) );
 				reserve(a);

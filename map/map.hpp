@@ -7,10 +7,10 @@
 
 namespace ft {
 
-    template < class Key,                                           // map::key_type
-               class T,                                             // map::mapped_type
-               class Compare = std::less<Key>,                      // map::key_compare
-               class Alloc = std::allocator<ft::pair<const Key,T> > // map::allocator_type
+    template < class Key,
+               class T,
+               class Compare = std::less<Key>,
+               class Alloc = std::allocator<ft::pair<const Key,T> >
                >
     class map
     {
@@ -19,7 +19,7 @@ namespace ft {
             typedef T 											mapped_type;
             typedef ft::pair<const key_type, mapped_type> 		value_type;
             typedef Compare 									key_compare;
-            typedef Alloc allocator_type;
+            typedef Alloc										allocator_type;
             typedef typename allocator_type::reference 			reference;
             typedef typename allocator_type::const_reference	const_reference;
             typedef typename allocator_type::pointer			pointer; 
@@ -43,6 +43,7 @@ namespace ft {
 			}
 			
 			map (const map& x) { *this = x; };
+
 			~map ( void ) {};
 
 			map	&operator=( const map &rhs ) {
@@ -176,8 +177,6 @@ namespace ft {
 				std::swap(_Allocator, x._Allocator);
 			}
 
-            void	printTree() {_Tree.print();}
-
 		private:
 			tree_type		_Tree;
         	key_compare		_Comp;
@@ -200,7 +199,7 @@ namespace ft {
     template< class Key, class T, class Compare, class Alloc >
         bool operator<( const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs ) { return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
     template< class Key, class T, class Compare, class Alloc >
-        bool operator<=( const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs ) { return (!operator<(rhs, lhs)); }
+        bool operator<=( const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs ) { return (!operator>(lhs, rhs)); }
     template< class Key, class T, class Compare, class Alloc >
         bool operator>( const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs ) { return (operator<(rhs, lhs)); }	
     template< class Key, class T, class Compare, class Alloc >

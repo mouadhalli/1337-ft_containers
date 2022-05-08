@@ -1,6 +1,7 @@
-
 #ifndef REVERSE_ITERATOR_H
 #define REVERSE_ITERATOR_H
+
+#include "iterator_traits.hpp"
 
 namespace ft{
 
@@ -100,7 +101,8 @@ reverse_iterator<Iterator> operator+ (
 
 template <class Iterator>
 typename reverse_iterator<Iterator>::difference_type operator- (
-    const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) {return rhs.base() - lhs.base();}
-	
+    const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) {
+		return rhs.base() - lhs.base();
+	}
 }
 #endif

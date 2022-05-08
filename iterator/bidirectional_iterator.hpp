@@ -1,20 +1,17 @@
 #ifndef BIDIRECTIONAL_ITERATOR_HPP
 #define BIDIRECTIONAL_ITERATOR_HPP
 
-#include "iterator_traits.hpp"
-
 namespace ft {
 
     template < typename T, typename NodeType, typename TreeType >
     class bidirectional_iterator {
+
         public:
-			typedef T	iterator_type;		
-            typedef	iterator_traits< iterator<std::bidirectional_iterator_tag, iterator_type> > iterator_traits;
-			typedef typename iterator_traits::iterator_category	iterator_category;
-			typedef typename iterator_traits::value_type		value_type;
-			typedef typename iterator_traits::difference_type	difference_type;
-			typedef typename iterator_traits::pointer			pointer;
-			typedef typename iterator_traits::reference			reference;
+			typedef std::bidirectional_iterator_tag				iterator_category;
+			typedef	T											value_type;
+			typedef std::ptrdiff_t								difference_type;
+			typedef value_type*									pointer;
+			typedef value_type&									reference;
 
 			bidirectional_iterator() : _Node(), _Tree() {}
 			bidirectional_iterator(NodeType *node, const TreeType *tree) : _Node(node), _Tree(tree) {}
@@ -36,31 +33,14 @@ namespace ft {
 			operator bidirectional_iterator<const value_type, const NodeType, TreeType>() const {
 				return bidirectional_iterator<const value_type, const NodeType, TreeType>(_Node, _Tree);
 			}
-/*
-	increment iterator:
-		- iterator should be pointing to a node so we can find the next one
-			- next node => currentNode < nextNode : (first node that is greater than the current one)
-				this means that we should find its inorder successor (Inorder Successor of an input node can also be defined
-				as the node with the smallest key greater than the key of the input node)
-					- to find the innordesuccesor node there is two cases:
-						1 - if currentNode have a right subtree then its inordesuccesor is the min key traveling from there
-						2 - if currentNode doesn't have a right subtree then the innordesuccesor is one of its incestors
-							we should travel up and find a node which its left subtree is our currentNode node
-							T1 = currentNode     | x = currentNode
-							x = innordersuccesor | T2 = innordersuccesor
-										       y 
-										     /   \
-										    x     z
-										  /  \    /  \ 
-										 T1  T2  T3  T4
-*/
+
 			bidirectional_iterator	&operator++() {
 				if (_Tree)
 				{
 					if (!_Node)
 						_Node = _Tree->minValueNode(_Tree->getRoot());
 					else
-						_Node = _Tree->inorderSuccessor(_Node);	
+						_Node = _Tree->inorderSuccessor(_Node);
 				}
 				return (*this);
 			}
