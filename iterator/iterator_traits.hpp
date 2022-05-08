@@ -12,7 +12,7 @@ namespace ft {
 			typedef typename Iter::reference			reference;
 			typedef typename Iter::iterator_category	iterator_category;		
 		};
-	
+
 	template< class T >
 		struct iterator_traits<T*> {
 			typedef ptrdiff_t							difference_type;

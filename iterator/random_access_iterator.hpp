@@ -61,7 +61,7 @@ class random_access_iterator
 		random_access_iterator operator+( difference_type rhs ) const {return random_access_iterator(_Ptr + rhs);}
 		random_access_iterator operator-( difference_type rhs ) const {return random_access_iterator(_Ptr - rhs);}
 
-		pointer	getData( void ) const {return _Ptr;}
+		pointer	base( void ) const {return _Ptr;}
 
 	private:
 		pointer	_Ptr;
@@ -72,22 +72,22 @@ class random_access_iterator
 template < class T >
 random_access_iterator<T> operator+(ptrdiff_t lhs, const random_access_iterator<T>& rhs) { return (rhs + lhs); }
 
-template < class T >
-bool operator==(const random_access_iterator<T>& lhs, const random_access_iterator<T>& rhs) { return lhs.getData() == rhs.getData(); }
+template < class T, class S >
+bool operator==(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return lhs.base() == rhs.base(); }
 
-template < class T >
-bool operator!=(const random_access_iterator<T>& lhs, const random_access_iterator<T>& rhs) { return !operator==(lhs, rhs); }
+template < class T, class S >
+bool operator!=(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return !operator==(lhs, rhs); }
 
-template < class T >
-bool operator<(const random_access_iterator<T>& lhs, const random_access_iterator<T>& rhs) { return lhs.getData() < rhs.getData(); }
+template < class T, class S >
+bool operator<(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return lhs.base() < rhs.base(); }
 
-template < class T >
-bool operator>(const random_access_iterator<T>& lhs, const random_access_iterator<T>& rhs) { return operator<(rhs, lhs); }
+template < class T, class S >
+bool operator>(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return operator<(rhs, lhs); }
 
-template < class T >
-bool operator<=(const random_access_iterator<T>& lhs, const random_access_iterator<T>& rhs) { return !operator<(rhs, lhs); }
+template < class T, class S >
+bool operator<=(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return !operator<(rhs, lhs); }
 
-template < class T >
-bool operator>=(const random_access_iterator<T>& lhs, const random_access_iterator<T>& rhs) { return !operator<=(lhs, rhs); }
+template < class T, class S >
+bool operator>=(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return !operator<=(lhs, rhs); }
 
 }
