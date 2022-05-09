@@ -36,7 +36,7 @@ std::cout << YELLOW << "\t===================================test construct=====
 		std::cout << "size of fourth: " << fourth.size() << '\n';
 	}
 	{
-		std::cout << "std::stack\n";
+		std::cout << "ft::stack\n";
 		std::deque<int> mydeque (3,100);          // deque with 3 elements
 		ft::vector<int> myvector (2,200);        // vector with 2 elements
 

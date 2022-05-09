@@ -241,13 +241,10 @@ class vector
 				return;
 			if ( _size + range > _Capacity)
 				reserve((_Capacity * 2) > (_Capacity + range) ? (_Capacity * 2)  : (_Capacity + range));
-			for(difference_type i = (_size - 1) + range; i >= pos; i--)
-			{
-				if (i >= pos + range) 
+			for(difference_type i = (_size - 1) + range; i >= pos + range; i--)
 					_alloc.construct(&_Arr[i], _Arr[i - range]);
-				else
-					_alloc.construct(&_Arr[i], *first++);
-			}
+			for(int i = pos; i < pos + range; i++)
+				_alloc.construct(&_Arr[i], *first++);
 			_size += range;
 		}
 

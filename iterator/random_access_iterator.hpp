@@ -85,9 +85,9 @@ template < class T, class S >
 bool operator>(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return operator<(rhs, lhs); }
 
 template < class T, class S >
-bool operator<=(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return !operator<(rhs, lhs); }
+bool operator<=(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return !operator>(lhs, rhs); }
 
 template < class T, class S >
-bool operator>=(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return !operator<=(lhs, rhs); }
+bool operator>=(const random_access_iterator<T>& lhs, const random_access_iterator<S>& rhs) { return !operator<(lhs, rhs); }
 
 }

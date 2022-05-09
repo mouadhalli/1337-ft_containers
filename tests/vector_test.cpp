@@ -120,7 +120,6 @@ std::cout << YELLOW << "\t===================================test at============
 {
 	{
 		std::cout << "std::vector\n";
-		std::cout << "ft::vector\n";
 		std::vector<int> myvector (10);   // 10 zero-initialized ints
 
 		// assign some values:

@@ -115,8 +115,11 @@ namespace ft {
 			}
 
 			void erase (iterator first, iterator last) {
-				while (first != last)
-					erase(first++);
+				ft::vector<key_type>KeysVector;
+				for (;first != last; first++)
+					KeysVector.push_back(first->first);
+				for(typename ft::vector<key_type>::iterator it = KeysVector.begin();it != KeysVector.end(); it++)
+                        erase(*it);
 			}
 
             void clear( void ) {_Tree.clear();}
